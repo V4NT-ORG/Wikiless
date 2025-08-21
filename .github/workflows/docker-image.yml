@@ -40,4 +40,3 @@ services:
       - DAC_OVERRIDE
 
 networks:
-  wikiless_net:
