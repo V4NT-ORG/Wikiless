@@ -1,6 +1,7 @@
 module.exports = (app, utils) => {
   const config = require('../wikiless.config')
   const path = require('path')
+  const { URL } = require('url')
 
   app.all(/.*/, (req, res, next) => {
     let themeOverride = req.query.theme
@@ -173,7 +174,14 @@ module.exports = (app, utils) => {
   app.post('/preferences', (req, res, next) => {
     const theme = req.body.theme
     const default_lang = req.body.default_lang
-    let back = req.url.split('?back=')[1]
+    // Use URLSearchParams to robustly extract 'back' from the query string
+    let back = '/'
+    try {
+      const urlObj = new URL(req.originalUrl, `http://${req.headers.host}`);
+      back = urlObj.searchParams.get('back') || '/';
+    } catch (e) {
+      back = '/';
+    }
 
     res.cookie('theme', theme, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true })
     res.cookie('default_lang', default_lang, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true })
