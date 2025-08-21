@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   wikiless:
     build:
@@ -7,9 +9,10 @@ services:
     hostname: wikiless
     restart: always
     networks:
-      - wikiless_net
+      wikiless_net:
+        ipv4_address: 172.4.0.6
     environment:
-      REDIS_HOST: redis://wikiless_redis:6379
+      REDIS_HOST: redis://172.4.0.5:6379
     ports:
       - "127.0.0.1:8180:8080" # change port if needed
     security_opt:
@@ -25,7 +28,8 @@ services:
     image: redis:latest
     restart: always
     networks:
-      - wikiless_net
+      wikiless_net:
+        ipv4_address: 172.4.0.5
     user: nobody
     read_only: true
     security_opt:
@@ -39,4 +43,8 @@ services:
       - SETUID
       - DAC_OVERRIDE
 
-
+networks:
+  wikiless_net:
+    ipam:
+      config:
+        - subnet: 172.4.0.0/16
