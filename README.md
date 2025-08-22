@@ -26,4 +26,4 @@ Visit ```http://localhost:8180``` in your web browser to use Wikiless locally.
 
 # License
 
-This project is licensed under the GNU Affero General Public License v3.0.
+This project is licensed under the MIT.
