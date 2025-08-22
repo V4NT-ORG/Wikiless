@@ -1,6 +1,20 @@
 module.exports = (app, utils) => {
   const config = require('../wikiless.config')
   const path = require('path')
+  const { URL } = require('url')
+  const rateLimit = require('express-rate-limit')
+
+  // Rate limiter for PDF download route: max 100 requests per 15 minutes per IP
+  const pdfRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+  });
+
+  // Rate limiter for general GET route: max 100 requests per 15 minutes per IP
+  const generalRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+  });
 
   app.all(/.*/, (req, res, next) => {
     let themeOverride = req.query.theme
@@ -24,7 +38,7 @@ module.exports = (app, utils) => {
     return next()
   })
 
-  app.get(/.*/, async (req, res, next) => {
+  app.get(/.*/, generalRateLimiter, async (req, res, next) => {
     if(req.url.startsWith('/w/load.php')) {
       return res.sendStatus(404)
     }
@@ -124,7 +138,7 @@ module.exports = (app, utils) => {
     return handleWikiPage(req, res, '/wiki/Map')
   })
 
-  app.get('/api/rest_v1/page/pdf/:page', async (req, res, next) => {
+  app.get('/api/rest_v1/page/pdf/:page', pdfRateLimiter, async (req, res, next) => {
     if(!req.params.page) {
       return res.redirect('/')
     }
@@ -150,7 +164,15 @@ module.exports = (app, utils) => {
     return handleWikiPage(req, res, '/')
   })
 
-  app.get('/about', (req, res, next) => {
+  // Rate limiter for /about route: max 100 requests per 15 minutes per IP
+  const aboutLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
+
+  app.get('/about', aboutLimiter, (req, res, next) => {
     return res.sendFile(path.join(__dirname, '../static/about.html'))
   })
 
@@ -173,7 +195,14 @@ module.exports = (app, utils) => {
   app.post('/preferences', (req, res, next) => {
     const theme = req.body.theme
     const default_lang = req.body.default_lang
-    let back = req.url.split('?back=')[1]
+    // Use URLSearchParams to robustly extract 'back' from the query string
+    let back = '/'
+    try {
+      const urlObj = new URL(req.originalUrl, `http://${req.headers.host}`);
+      back = urlObj.searchParams.get('back') || '/';
+    } catch (e) {
+      back = '/';
+    }
 
     res.cookie('theme', theme, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true })
     res.cookie('default_lang', default_lang, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true })
