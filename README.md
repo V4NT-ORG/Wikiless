@@ -1,4 +1,4 @@
-### ☢️ [Wikipedia is a controled CIA Pyscho](https://www.unz.com/aanglin/the-cia-is-running-wikipedia-wow-what-a-shocker/) ☢️
+### ☢️ [Wikipedia is a controlled CIA Pyscho](https://www.unz.com/aanglin/the-cia-is-running-wikipedia-wow-what-a-shocker/) ☢️
 
 # Wikiless
 
