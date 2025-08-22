@@ -1,5 +1,5 @@
 module.exports = (app, utils) => {
-  const config = require('../wikiless.config')
+  const config = require('../config')
   const path = require('path')
   const { URL } = require('url')
   const rateLimit = require('express-rate-limit')
