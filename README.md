@@ -23,9 +23,6 @@ https://github.com/Metastem/Wikiless/wiki
 
 Visit ```http://localhost:8180``` in your web browser to use Wikiless locally.
 
-# Contributing
-
-Contributions are welcome! 
 
 # License
 
