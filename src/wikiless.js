@@ -1,16 +1,12 @@
-const config = require('../wikiless.config')
+const config = require('../config')
 const compression = require('compression')
 const path = require('path')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const fs = require('fs')
-const lusca = require('lusca')
 const app = express()
 const r = require('redis')
 const bodyParser = require('body-parser')
-
-// Health endpoint
-app.get('/health', (req, res) => res.sendStatus(200));
 
 const redis = (() => {
   const redisOptions = {
@@ -80,7 +76,6 @@ if(config.redirect_http_to_https) {
 app.use(compression())
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }))
-app.use(lusca.csrf())
 app.use(express.static(path.join(__dirname, '../static')))
 app.use(express.static(path.join(__dirname, '../media')))
 
@@ -93,21 +88,7 @@ require('./routes')(app, utils)
 const cacheControl = require('./cache_control.js')
 cacheControl.removeCacheFiles()
 
-// Export the raw Express app for supertest
-module.exports = app;
-
-// Only start servers if called via 'node src/wikiless.js' or 'npm start'
-if (require.main === module) {
-  if (config.https_enabled) {
-    https.listen(config.ssl_port, config.http_addr, () =>
-      console.log(
-        `Wikiless ${config.domain} running on https://${config.http_addr}:${config.ssl_port}`
-      )
-    );
-  }
-  http.listen(config.nonssl_port, config.http_addr, () =>
-    console.log(
-      `Wikiless ${config.domain} running on http://${config.http_addr}:${config.nonssl_port}`
-    )
-  );
+if(config.https_enabled) {
+  https.listen(config.ssl_port, config.http_addr, () => console.log(`Wikiless ${config.domain} running on https://${config.http_addr}:${config.ssl_port}`))
 }
+http.listen(config.nonssl_port, config.http_addr, () => console.log(`Wikiless ${config.domain} running on http://${config.http_addr}:${config.nonssl_port}`))
