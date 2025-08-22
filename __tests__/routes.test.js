@@ -2,8 +2,6 @@ const express = require('express');
 const request = require('supertest');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const { URL } = require('url')
-const rateLimit = require('express-rate-limit')
 
 // Mock config
 jest.mock('../wikiless.config', () => ({ theme: 'auto', default_lang: 'en' }));
