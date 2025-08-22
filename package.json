@@ -10,7 +10,9 @@
     "express": "^5.1.0",
     "got": "^14.4.7",
     "node-html-parser": "^7.0.1",
-    "redis": "^5.8.2"
+    "redis": "^5.8.2",
+    "express-rate-limit": "^8.0.1",
+    "lusca": "^1.7.0"
   },
   "devDependencies": {
     "jest": "^30.0.5",
