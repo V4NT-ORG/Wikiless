@@ -467,7 +467,7 @@ module.exports = function(redis) {
       return req.query.lang.toLowerCase()
      }
 
-    if(req.cookies && req.cookies.default_lang) {
+   if(req.cookies && req.cookies.default_lang) {
       return req.cookies.default_lang
     }
 
@@ -491,6 +491,9 @@ module.exports = function(redis) {
 
     const back = req.url.split('?back=')[1]
 
+    // CSRF
+    const csrfToken = req.csrfToken();
+
     const html = `
       <!DOCTYPE html>
       <html lang="en">
@@ -504,6 +507,7 @@ module.exports = function(redis) {
           <div id="preferences">
             <h4>Preferences</h4>
             <form method="POST" action="/preferences?back=${back}">
+             <input type="hidden" name="_csrf" value="${csrfToken}">
               <div class="setting">
                 <div class="label">
                   <label for="theme">Theme:</label>
